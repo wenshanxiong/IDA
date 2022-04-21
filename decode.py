@@ -1,5 +1,6 @@
 from pydoc import plain
-from util import decoding_matrix, dot_product, inverse
+import util
+from util import *
 
 def decode(fragments, A):
     """Decode the given fragments and returns the plaintext message
