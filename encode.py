@@ -1,4 +1,6 @@
+import numpy as np
 import util
+from util import *
 
 def encode(n, m, msg):
     """Encodes the given message and returns the fragments
@@ -17,14 +19,13 @@ def encode(n, m, msg):
 
     # pad last segment so that all segments have size m
     segments[-1] += [0] * (m - len(segments[-1]))
+    segments = np.array(segments)
 
     # TODO
-    # A = util.encoding_matrix()
+    A = util.encoding_matrix(n, m)
 
     # TODO
-    # output = A @ segments.T
-    # return output
-    print(segments)
+    output = dot_product(A, segments.T)
+    return output
 
-
-encode(3,3,'hello!!')
+print(encode(4, 3, "hello world!!"))
