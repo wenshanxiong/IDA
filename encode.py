@@ -26,6 +26,4 @@ def encode(n, m, msg):
 
     # TODO
     output = dot_product(A, segments.T)
-    return output
-
-print(encode(4, 3, "hello world!!"))
+    return output, A
