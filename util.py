@@ -19,14 +19,15 @@ def encoding_matrix(n, m):
             A[i, j] = (x + 1) ** j
     return A
 
-def decoding_matrix(A):
+def decoding_matrix(A, fragmentIDs):
     """Create an m x m decoding matrix
     Parameters:
         A: the encoding matrix
+        fragmentIDs: a list of fragments' IDs for making decoding matrix
     Returns:
         the decoding matrix
     """
-    pass
+    return inverse(A[fragmentIDs, ])
 
 def dot_product(m1, m2):
     """calculate the dot product of m1 and m2

@@ -11,8 +11,11 @@ def decode(fragments, A):
         The plaintext message
     """
 
-    # TODO
-    B = decoding_matrix(A)
+    # TODO: fragmentIDs should be taken as an argument to function 'decoding_matrix'
+    #       (each row of arg 'fragments' should be assigned with an ID)
+    #       (recommendation: turn fragments into a dict with keys as ID)
+    fragmentIDs = fragments.keys()
+    B = decoding_matrix(A, fragmentIDs)
     output = dot_product(inverse(B), fragments)
 
     # recover the original byte array
