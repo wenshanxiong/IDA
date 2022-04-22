@@ -19,11 +19,9 @@ def encode(n, m, msg):
 
     # pad last segment so that all segments have size m
     segments[-1] += [0] * (m - len(segments[-1]))
-    segments = np.array(segments)
+    segments = GF(segments)
 
-    # TODO
     A = util.encoding_matrix(n, m)
 
-    # TODO
     output = dot_product(A, segments.T)
     return output, A
