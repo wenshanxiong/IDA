@@ -1,2 +1,4 @@
-/fragments/
-*/__pycache__/
+fragments/
+__pycache__/
+venv/
+*.pyc
