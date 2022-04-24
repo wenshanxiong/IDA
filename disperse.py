@@ -6,7 +6,7 @@ from util import *
 parser = argparse.ArgumentParser()
 parser.add_argument('inputFile', help='the input filename')
 
-def disperse(filename, n=4, m=3):
+def disperse(filename):
     A = None
     fragment_matrix = None
 
@@ -18,12 +18,9 @@ def disperse(filename, n=4, m=3):
         segments = [payload[i:i+m] for i in range(0, len(payload), m)]
         segments = GF(segments)
 
-        A = encoding_matrix(n, m)
+        A = gen_encoding_matrix(n, m)
         
-        fragment_matrix = dot_product(A, segments.T)
-        
-        print(A)
-        print(fragment_matrix)
+        fragment_matrix = A @ segments.T
 
     # write fragments to files
     for i in range(n):
