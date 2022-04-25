@@ -29,12 +29,13 @@ def disperse(filename):
         os.makedirs(os.path.dirname(frag_filename), exist_ok=True)
 
         with open(frag_filename, 'wb') as f:
-            payload = list(A[i]) + list(fragment_matrix[i])
-            signature = gen_HMAC(bytes(payload))
+            payload = bytes(list(A[i]) + list(fragment_matrix[i]))
+            cypher_payload = F.encrypt(payload)
+            signature = gen_HMAC(cypher_payload)
 
             # file content: header | fragment | signature
-            content = bytes(payload) + signature
-            f.write(F.encrypt(content))
+            content = cypher_payload + signature
+            f.write(content)
 
 
 if __name__ == "__main__":
