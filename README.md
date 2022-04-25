@@ -30,8 +30,8 @@ python3 reconstruct.py fragments/
 
 ## Authors
 
-Wenshan Xiong 
-Shichen Zhou
+* [Wenshan Xiong](www.linkedin.com/in/wenshanxiong)
+* [Shichen Zhou](zhoushichen99@163.com)
 
 
 ## Acknowledgments
