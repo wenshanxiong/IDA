@@ -2,3 +2,5 @@ fragments/
 __pycache__/
 venv/
 *.pyc
+output
+fingerprints/

@@ -1,9 +1,19 @@
-import numpy as np
+import sympy as sym
 import galois
+import hmac
+from cryptography.fernet import Fernet
+from hashlib import sha256
 
+n = 4
+m = 3
+deg = 11 # degree of the irreducible polynomial
+
+sec_key = b'o7FUu9QB4D94gYnPDr7BHs0TxlvKvFiNtUYcebJJt0s='
 GF = galois.GF(2 ** 8) # modular arithemtic uses finite field GF(2^8)
+F = Fernet(sec_key)
+f_poly = galois.irreducible_poly(2 ** 8, deg, method='random')
 
-def encoding_matrix(n, m):
+def gen_encoding_matrix(n, m):
     """Create an n x m encoding matrix.
     Parameters:
         n: the number of fragments to output
@@ -18,41 +28,35 @@ def encoding_matrix(n, m):
         A[:,j] = A[:,j] ** j
     return A
 
-def decoding_matrix(A, fragmentIDs):
-    """Create an m x m decoding matrix
-    Parameters:
-        A: the encoding matrix
-        fragmentIDs: a list of fragments' IDs for making decoding matrix
-    Returns:
-        the decoding matrix
-    """
-    return inverse(A[fragmentIDs, ])
+def gen_HMAC(payload):
+    h = hmac.new(sec_key, payload, sha256)
+    return h.digest()
 
-def dot_product(m1, m2):
-    """calculate the dot product of m1 and m2
-    Parameters:
-        m1: the first matrix
-        m2: the second matrix
-    Returns:
-        The dot product of m1 and m2.
-    """
-    return m1 @ m2
+def gen_fingerprint(F_coefs, fp_filename):
+    x = sym.symbols('x')
 
-def inverse(m):
-    """calculate the inverse of a matrix
-    Parameters:
-        m: the matrix
-    Returns:
-        The inverse of m
-    """
-    return np.linalg.inv(m)
+    f_coefs = list(map(int, list(f_poly.coeffs)))
+    F_coefs = list(map(int, F_coefs))
 
+    size = deg + len(F_coefs)
+
+    with open(fp_filename, 'wb') as f:
+        for i in range(size):
+            row = []
+
+            if i in range(0, deg):
+                row = f_coefs
+                row.extend((n-1-i)*[0])
+                row[:0] = [0]*i
+
+            if i in range(deg, size):
+                row = F_coefs
+                row.extend((size-1-i)*[0])
+                row[:0] = [0]*(size-len(row))
+
+            f.write(bytes(row))
 
 if __name__ == "__main__":
-    A = encoding_matrix(6, 4)
-    print(A, type(A))
-
-    B = decoding_matrix(A, [0,1,2,3])
-    print(B, type(B))
-
-    print(dot_product(A[[0,1,2,3],], B))
+    # A = gen_encoding_matrix(6, 4)
+    # print(A, type(A))
+    pass
