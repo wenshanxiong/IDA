@@ -1,7 +1,5 @@
 # IDA (Information dispersal algorithm)
 
-Simple overview of use/purpose.
-
 ## Description
 
 Implemention of Rabin's information dispersal algorithm. This project implements functionalities that split a file into a number of pieces, 
