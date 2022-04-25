@@ -19,9 +19,15 @@ def reconstruct(frag_dir):
         if i >= m:
             break
         with open(frag_dir + filename, 'rb') as f:
-            header = f.read(m)
+            content = F.decrypt(f.read())
+            header, payload, signature = content[:3], content[3:-32], content[-32:]
             B.append(GF(list(header)))
-            payload = f.read()
+
+            # authenticate the fragment
+            if signature != gen_HMAC(content[:-32]):
+                print("Unable to authenticate fragment file '{}'".format(filename))
+                return
+
             fragments.append(GF(list(payload)))
 
     B = np.linalg.inv(GF(B))

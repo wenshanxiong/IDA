@@ -1,17 +1,17 @@
-import numpy as np
 import sympy as sym
 import galois
+import hmac
 from cryptography.fernet import Fernet
-from sympy.polys import subresultants_qq_zz
+from hashlib import sha256
 
 n = 4
 m = 3
 deg = 11 # degree of the irreducible polynomial
 
+sec_key = b'o7FUu9QB4D94gYnPDr7BHs0TxlvKvFiNtUYcebJJt0s='
 GF = galois.GF(2 ** 8) # modular arithemtic uses finite field GF(2^8)
-F = Fernet(Fernet.generate_key())
+F = Fernet(sec_key)
 f_poly = galois.irreducible_poly(2 ** 8, deg, method='random')
-
 
 def gen_encoding_matrix(n, m):
     """Create an n x m encoding matrix.
@@ -28,6 +28,10 @@ def gen_encoding_matrix(n, m):
         A[:,j] = A[:,j] ** j
     return A
 
+def gen_HMAC(payload):
+    h = hmac.new(sec_key, payload, sha256)
+    return h.digest()
+
 def gen_fingerprint(F_coefs, fp_filename):
     x = sym.symbols('x')
 
@@ -35,7 +39,7 @@ def gen_fingerprint(F_coefs, fp_filename):
     F_coefs = list(map(int, F_coefs))
 
     size = deg + len(F_coefs)
-    
+
     with open(fp_filename, 'wb') as f:
         for i in range(size):
             row = []
@@ -55,5 +59,4 @@ def gen_fingerprint(F_coefs, fp_filename):
 if __name__ == "__main__":
     # A = gen_encoding_matrix(6, 4)
     # print(A, type(A))
-    # gen_fingerprint(list(f_poly.coeffs))
     pass
