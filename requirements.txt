@@ -2,3 +2,4 @@ cryptography==2.8
 galois==0.0.26
 numpy==1.21.6
 sympy==1.10.1
+unireedsolomon==1.0.5

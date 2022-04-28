@@ -12,29 +12,41 @@ def reconstruct(frag_dir):
         print("m={} fragments are needed for reconstructing the file !".format(str(m)))
         sys.exit(1)
 
+    cypher_payloads = []
+    fingerprints = []
+    
+    for i in range(n):
+        with open(frag_dir + str(i), 'rb') as f:
+            content = f.read()
+            cypher_payload = content
+
+        cypher_payloads.append(cypher_payload)
+        with open(frag_dir + str(i) + 'rs', 'r') as f:
+            fingerprint = f.read()
+            fingerprints.append(fingerprint)
+
+    print(fingerprints)
+
+    recovered_hashes = recover_hashes(fingerprints)
     B = [] # decoding matrix
     fragments = []
-    
-    for i, filename in enumerate(os.listdir(frag_dir)):
+    for i in range(n):
         if len(fragments) >= m:
             break
-        with open(frag_dir + filename, 'rb') as f:
-            content = f.read()
-            cypher_payload, signature = content[:-32], content[-32:]
-
-            # authenticate the fragment
-            if signature != gen_HMAC(content[:-32]):
-                print("Unable to authenticate fragment file '{}'".format(filename))
-                continue
-
-            plaintext_payload = F.decrypt(cypher_payload)
+        hash = gen_hash(cypher_payloads[i])
+        if hash == recovered_hashes[i]:
+            plaintext_payload = F.decrypt(cypher_payloads[i])
             header, payload = plaintext_payload[:3], plaintext_payload[3:]
             B.append(GF(list(header)))
             fragments.append(GF(list(payload)))
+        else:
+            print(hash, recovered_hashes[i])
+            print("fragment {} is corrupted".format(i))
 
     if len(fragments) < m:
-        print("Not enough valid fragments. Cannot reconstruct the file")
-        return
+        print("Not enough valid fragments ({}/{}). Cannot reconstruct file".format(len(fragments), m))
+
+    print(B)
 
     B = np.linalg.inv(GF(B))
     fragments = GF(fragments)

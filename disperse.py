@@ -23,19 +23,31 @@ def disperse(filename):
         
         fragment_matrix = A @ segments.T
 
+    # generate distributed fingerprint
+    cypher_payloads = []
+    hashes = []
+    for i in range(n):
+        payload = bytes(list(A[i]) + list(fragment_matrix[i]))
+        cypher_payload = F.encrypt(payload)
+        cypher_payloads.append(cypher_payload)
+        hashes.append(gen_hash(cypher_payloads[i]))
+    distributed_fingerprint = gen_distributed_fingerprint(hashes)
+    print(distributed_fingerprint)
+
     # write fragments to files & create signature for each fragment
     for i in range(n):
         frag_filename = "./fragments/" + str(i)
         os.makedirs(os.path.dirname(frag_filename), exist_ok=True)
 
         with open(frag_filename, 'wb') as f:
-            payload = bytes(list(A[i]) + list(fragment_matrix[i]))
-            cypher_payload = F.encrypt(payload)
-            signature = gen_HMAC(cypher_payload)
+            cypher_payload = cypher_payloads[i]
+            fingerprint = distributed_fingerprint[i]
 
             # file content: header | fragment | signature
-            content = cypher_payload + signature
+            content = cypher_payload
             f.write(content)
+        with open(frag_filename + 'rs', 'w') as f:
+            f.write(fingerprint)
 
 
 if __name__ == "__main__":
